@@ -1,0 +1,8 @@
+= Agree2 Client
+ 
+Author::    Pelle Braendgaard (http://stakeventures.com)
+Copyright:: Copyright (c) 2008 Pelle Braendgaard
+License::   MIT
+Git::       https://github.com/pelle/agree2-client/tree/master
+
+This client library allows you to integrate Agree2 into your application.
