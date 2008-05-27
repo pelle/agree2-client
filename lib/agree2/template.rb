@@ -1,5 +1,5 @@
 module Agree2
-  class Template
+  class Template<Agreement
     
   end
 end

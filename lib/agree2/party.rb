@@ -1,5 +1,5 @@
 module Agree2
-  class Party
+  class Party<Base
     
   end
 end

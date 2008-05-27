@@ -14,4 +14,15 @@ describe Agree2::User do
     @user.secret.should=="token_secret"
   end
   
+  it "should find all agreements" do
+    @agreements=[]
+    @xml="XML"
+    @response={}
+    @response.stub!(:body).and_return(@xml)
+    @user.token.should_receive(:get).with("/agreements.xml").and_return(@response)
+    @user.agreements.should_receive(:parse_xml).with(@xml).and_return(@agreements)
+    @user.agreements.length.should==0
+    @user.agreements.should==@agreements
+  end
+  
 end
