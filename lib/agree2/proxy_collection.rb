@@ -43,7 +43,7 @@ module Agree2
     end
     
     def load_target
-      @target||=parse_xml(@user.token.get("/#{self.path}.xml").body)
+      @target||=parse_xml(@user.get("/#{self.path}.xml"))
     end
     
     def reset

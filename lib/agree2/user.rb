@@ -15,6 +15,26 @@ module Agree2
       @templates||=Agree2::ProxyCollection.new self,:masters,'Template'
     end
     
+    def get(path)
+      handle_response token.get(path)
+    end
+
+    def head(path)
+      handle_response token.head(path)
+    end
+    
+    def post(path,xml)
+      handle_response token.post(path,xml)
+    end
+    
+    def put(path,xml)
+      handle_response token.put(path,xml)
+    end
+    
+    def delete(path)
+      handle_response token.delete(path)
+    end
+
     # OAuth Stuff below here
     
     # The AccessToken token
@@ -25,6 +45,12 @@ module Agree2
     # The AccessToken secret
     def secret
       @token.secret
+    end
+    
+    protected
+    
+    def handle_response(response)
+      response.body
     end
   end
 end
