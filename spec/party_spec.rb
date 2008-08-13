@@ -7,17 +7,6 @@ describe Agree2::Agreement do
     @client=Agree2::Client.new "client_key","client_secret"
     @user=Agree2::User.new(@client,"token","token_secret")
     @agreement=Agreement.new @user,{:permalink=>'hello'}
-    @xml=%q{<party>
-        <created-at type="datetime">2008-08-12T22:04:51Z</created-at>
-        <email>bob@gmail.inv</email>
-        <first-name>Bob</first-name>
-        <id type="integer">1102</id>
-        <invited-at type="datetime" nil="true"></invited-at>
-        <last-name>Wildcat</last-name>
-        <organization-name nil="true"></organization-name>
-        <role>client</role>
-        <updated-at type="datetime">2008-08-12T22:04:51Z</updated-at>
-      </party>}
   end
   
   describe "Built from hash" do
@@ -51,10 +40,11 @@ describe Agree2::Agreement do
     
   end
 
-  describe "from xml" do
+  describe "from json" do
 
     before(:each) do
-      @party=Party.new(@agreement,@xml)
+      @json=IO.read(File.join(File.dirname(__FILE__),"fixtures","party.json"))
+      @party=Party.new(@agreement,@json)
     end
 
     it "should have agreement" do

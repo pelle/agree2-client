@@ -21,8 +21,8 @@ describe Agree2::Client do
   it "should create user" do
     user=@client.user("token","token_secret")
     user.client.should==@client
-    user.token.consumer.should==@client.consumer
-    user.key.should=="token"
+    user.access_token.consumer.should==@client.consumer
+    user.token.should=="token"
     user.secret.should=="token_secret"
   end
   
@@ -41,8 +41,8 @@ describe Agree2::Client do
     request_token.should_receive(:get_access_token).and_return(access_token)
     user=@client.user_from_request_token(request_token)
     user.client.should==@client
-    user.token.consumer.should==@client.consumer
-    user.key.should=="token"
+    user.access_token.consumer.should==@client.consumer
+    user.token.should=="token"
     user.secret.should=="token_secret"
   end
 

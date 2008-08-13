@@ -1,12 +1,14 @@
+require 'json'
 require 'set'
-#require 'activesupport/core_ext/class/inheritable_attributes'
 module Agree2
+  # The superclass of all Agree2 Resource objects.
   class Base
     class<<self
       
-      def attr_serializable(*attributes)
+      def attr_serializable(*attributes) #:nodoc:
+        attributes.map!{|a|a.to_sym}
         write_inheritable_attribute("serializable_attributes", 
-          Set.new(attributes.map{|a|a.to_sym}) + 
+          Set.new(attributes) + 
           (serializable_attributes || []))
         attr_accessor *attributes
       end
@@ -16,105 +18,78 @@ module Agree2
         read_inheritable_attribute("serializable_attributes")
       end
       
-      def instance_url(id)
+      def instance_url(id) #:nodoc:
         "/#{collection_name}/#{id}"
       end
 
-      def singular_name
+      def singular_name #:nodoc:
         self.to_s.demodulize.underscore
       end
 
-      def collection_name
+      def collection_name #:nodoc:
         self.to_s.demodulize.tableize
       end
       
-      def get(user,id)
-        new( user, user.get(instance_url(id)+".xml"))
+      # Gets an instance of a resource
+      def get(container,id)
+        user=(container.is_a?(User) ? container : container.user)
+        new( container, user.get(instance_url(id)+".json"))
       end
       
     end
 
     attr_accessor :user,:attributes,:container
         
-    def initialize(container,fields={})
+    def initialize(container,fields={})#:nodoc:
       @container=container
       @user=(container.is_a?(User) ? container : container.user)
       attributes={}
       if fields.is_a?(Hash)
         load_attributes(fields)
       else
-        load_xml(fields)
+        load_json(fields)
       end
     end
     
-
-    def decode(element)
+    # Reloads the object from Agree2's servers
+    def reload
+      load_json(user.get(path+".json"))
+    end
+    
+    # Returns the full URL for the object
+    def to_url
+      "#{AGREE2_URL}#{path}"
+    end
+    
+    # Returns the relative path to the object
+    def path #:nodoc:
+      self.container.path+self.class.instance_url(to_param)
+    end
+    
+    # The primary key of the object
+    def to_param #:nodoc:
+      id
+    end
+    
+    protected
+    
+    def decode(element) #:nodoc:
         for field in self.class.serializable_attributes
           method_name="#{field.to_s}=".to_sym
           self.send(method_name, (element/field.to_sym).innerHTML) if self.respond_to?(method_name)
         end
         self
     end
-    
-    def reload
-      load_xml(user.get(path+".xml"))
-    end
-    
-    def to_url
-      "#{AGREE2_URL}#{path}"
-    end
-    
-    def path
-      self.container.path+self.class.instance_url(to_param)
-    end
-    
-    def to_param
-      id
-    end
-    
-#    def respond_to?(method, include_priv = false)
-#      method_name = method.to_s
-#      if attributes.nil?
-#        return super
-#      elsif attributes.has_key?(method_name)
-#        return true 
-#      elsif ['?','='].include?(method_name.last) && attributes.has_key?(method_name.first(-1))
-#        return true
-#      end
-#      # super must be called at the end of the method, because the inherited respond_to?
-#      # would return true for generated readers, even if the attribute wasn't present
-#      super
-#    end
-#    
-    protected
-    
-    def load_attributes(attributes)
+
+    def load_attributes(attributes) #:nodoc:
       attributes.each_pair do |key,value|
         method_name="#{key.to_s}=".to_sym
         self.send(method_name,value) if self.respond_to?(method_name)
       end
     end
-    
-    def parse_xml(xml)
-      doc=Hpricot.parse(xml)
-      @base=doc.at("#{self.class.singular_name}")
-      return @base unless @base.containers
-      @base.containers.inject({}) do |h,e|
-        children=e.containers
-        if children.empty?
-          h[e.name.underscore]=e.inner_text
-        else
-          h[e.name]=children.inject({}) do |c,ce|
-            c[ce.name.underscore]=ce.inner_text
-            c
-          end
-        end
-        h
-      end
-    end
-    
-    def load_xml(xml)
-      load_attributes(parse_xml(xml))
+        
+    def load_json(json) #:nodoc:
+      load_attributes(JSON.parse(json))
     end
 #    private
 #    

@@ -1,9 +1,15 @@
 require 'net/https'
 require 'rubygems'
 gem 'oauth', ">= 0.2.4"
-gem 'hpricot'
+gem 'json'
 gem 'activesupport'
 require 'activesupport'
+AGREE2_ENV = :production unless defined?(AGREE2_ENV)
+AGREE2_URL = (AGREE2_ENV==:development) ? 'http://agree2.dev' : 'https://agree2.com'
+module Agree2
+  class Agree2Exception < RuntimeError #:nodoc:
+  end
+end
 require 'agree2/client'
 require 'agree2/proxy_collection'
 require 'agree2/user'
@@ -12,11 +18,7 @@ require 'agree2/agreement'
 require 'agree2/party'
 require 'agree2/template'
 
-AGREE2_ENV = :production unless defined?(AGREE2_ENV)
-AGREE2_URL = (AGREE2_ENV==:development) ? 'http://agree2.dev' : 'https://agree2.com'
-module Agree2
-  
-end
+
 
 # FireEagle addition to the <code>OAuth::Consumer</code> class. Taken from Yahoo FireEagle GEM
 class OAuth::Consumer
