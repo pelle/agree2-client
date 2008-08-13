@@ -18,9 +18,16 @@ describe Agree2::User do
     @agreements=[]
     @xml="XML"
     @user.should_receive(:get).with("/agreements.xml").and_return(@xml)
-    @user.agreements.should_receive(:parse_xml).with(@xml).and_return(@agreements)
     @user.agreements.length.should==0
     @user.agreements.should==@agreements
+  end
+  
+  it "should find all templates" do
+    @templates=[]
+    @xml="XML"
+    @user.should_receive(:get).with("/masters.xml").and_return(@xml)
+    @user.templates.length.should==0
+    @user.templates.should==@templates
   end
   
 end

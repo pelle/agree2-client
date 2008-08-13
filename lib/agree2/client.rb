@@ -5,7 +5,7 @@ module Agree2
     attr_accessor :consumer
     
     def initialize(key,secret)
-      @consumer=OAuth::Consumer.new(key,secret,{:site=>'https://agree2.com'})
+      @consumer=OAuth::Consumer.new(key,secret,{:site=>AGREE2_URL})
     end
     
     # initialize a new user object with the given token and secret. The user object is what you use to do most of the work.

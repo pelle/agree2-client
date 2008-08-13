@@ -4,10 +4,11 @@ module Agree2
     alias_method :proxy_respond_to?, :respond_to?
     instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|proxy_)/ }
     attr_accessor :user,:path,:singular
-    def initialize(user,path,class_name=nil)
-      @user=user
+    def initialize(container,path,class_name=nil)
+      @container=container
+      @user=(container.is_a?(User) ? container : container.user)
       @path=path.to_s
-      @singular=@path.singularize.to_sym
+      @singular=(class_name||@path.singularize).downcase.to_sym
       @klass=eval "Agree2::#{(class_name||@path).to_s.classify}"
       reset
     end
@@ -35,7 +36,7 @@ module Agree2
     end
     
     def instantiate_item(attributes={})
-      @klass.new @user,attributes
+      @klass.new @container,attributes
     end
     
     def path
@@ -43,7 +44,7 @@ module Agree2
     end
     
     def load_target
-      @target||=parse_xml(@user.get("/#{self.path}.xml"))
+      @target||=parse_xml(@user.get("#{self.path}.xml"))
     end
     
     def reset

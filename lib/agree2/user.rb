@@ -8,11 +8,11 @@ module Agree2
     end
     
     def agreements
-      @agreements||=Agree2::ProxyCollection.new self,:agreements
+      @agreements||=Agree2::ProxyCollection.new self,'/agreements','Agreement'
     end
     
     def templates
-      @templates||=Agree2::ProxyCollection.new self,:masters,'Template'
+      @templates||=Agree2::ProxyCollection.new self,'/masters','Template'
     end
     
     def get(path)
@@ -23,12 +23,12 @@ module Agree2
       handle_response token.head(path)
     end
     
-    def post(path,xml)
-      handle_response token.post(path,xml)
+    def post(path,data)
+      handle_response token.post(path,data.to_json,{'Content-Type'=>'application/json'})
     end
     
-    def put(path,xml)
-      handle_response token.put(path,xml)
+    def put(path,data)
+      handle_response token.put(path,data)
     end
     
     def delete(path)
@@ -47,10 +47,26 @@ module Agree2
       @token.secret
     end
     
+    def path
+      ""
+    end
     protected
     
     def handle_response(response)
-      response.body
+      case response.code
+      when "200"
+        response.body
+      when "302"
+        if response['Location']=~/(#{AGREE2_URL})\/(.*)$/
+          parts=$2.split('/')
+          puts parts.inspect
+          (parts[0].classify.constantize).get self,parts[1]
+        else
+          #todo raise hell
+        end
+      else
+        response
+      end
     end
   end
 end

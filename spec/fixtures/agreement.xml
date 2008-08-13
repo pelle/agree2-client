@@ -2,18 +2,13 @@
 <agreement>
   <activated-at type="datetime" nil="true"></activated-at>
   <active-version type="integer" nil="true"></active-version>
-  <changed-by-id type="integer">1</changed-by-id>
-  <changed-by-type>User</changed-by-type>
   <created-at type="datetime">2008-06-19T18:34:50Z</created-at>
   <description nil="true"></description>
   <digest>314c5b8d4920bd5315ce3903f04ce140b5936280</digest>
-  <endpoint-id type="integer" nil="true"></endpoint-id>
   <finalized-at type="datetime" nil="true"></finalized-at>
-  <owner-account-id type="integer">1</owner-account-id>
   <permalink>86d1ac0be392f88a6ea7e3c6f684b0c926ba7012</permalink>
   <state>draft</state>
   <terminated-at type="datetime" nil="true"></terminated-at>
-  <theme-id type="integer" nil="true"></theme-id>
   <title>Option for [holder=pelleb@gmail.com] to buy [asset=Gold]</title>
   <updated-at type="datetime">2008-07-06T01:45:28Z</updated-at>
   <valid-to type="datetime">2008-10-06T01:45:28Z</valid-to>

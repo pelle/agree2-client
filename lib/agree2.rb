@@ -12,7 +12,8 @@ require 'agree2/agreement'
 require 'agree2/party'
 require 'agree2/template'
 
-
+AGREE2_ENV = :production unless defined?(AGREE2_ENV)
+AGREE2_URL = (AGREE2_ENV==:development) ? 'http://agree2.dev' : 'https://agree2.com'
 module Agree2
   
 end

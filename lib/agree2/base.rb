@@ -17,7 +17,7 @@ module Agree2
       end
       
       def instance_url(id)
-        "/#{collection_name}/#{id}.xml"
+        "/#{collection_name}/#{id}"
       end
 
       def singular_name
@@ -29,15 +29,16 @@ module Agree2
       end
       
       def get(user,id)
-        new( user, user.get(instance_url(id)))
+        new( user, user.get(instance_url(id)+".xml"))
       end
       
     end
 
-    attr_accessor :user,:attributes
+    attr_accessor :user,:attributes,:container
         
-    def initialize(user,fields={})
-      @user=user
+    def initialize(container,fields={})
+      @container=container
+      @user=(container.is_a?(User) ? container : container.user)
       attributes={}
       if fields.is_a?(Hash)
         load_attributes(fields)
@@ -53,6 +54,18 @@ module Agree2
           self.send(method_name, (element/field.to_sym).innerHTML) if self.respond_to?(method_name)
         end
         self
+    end
+    
+    def reload
+      load_xml(user.get(path+".xml"))
+    end
+    
+    def to_url
+      "#{AGREE2_URL}#{path}"
+    end
+    
+    def path
+      self.container.path+self.class.instance_url(to_param)
     end
     
     def to_param
@@ -85,6 +98,7 @@ module Agree2
     def parse_xml(xml)
       doc=Hpricot.parse(xml)
       @base=doc.at("#{self.class.singular_name}")
+      return @base unless @base.containers
       @base.containers.inject({}) do |h,e|
         children=e.containers
         if children.empty?
