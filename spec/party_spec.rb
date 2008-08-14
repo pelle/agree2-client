@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),"spec_helper")
 require 'open-uri'
 require 'hpricot'
 include Agree2
-describe Agree2::Agreement do
+describe Party do
   before(:each) do
     @client=Agree2::Client.new "client_key","client_secret"
     @user=Agree2::User.new(@client,"token","token_secret")
@@ -74,3 +74,20 @@ describe Agree2::Agreement do
   end
 end
 
+describe Agree2::Party, "party hash validation" do
+  before(:each) do
+    @hash={:first_name=>'Bob',:last_name=>'Wilson',:email=>'bob@gmail.com',:organization_name=>'SomeCo Inc.'}
+  end
+  
+  it "should validate" do
+    lambda {Party.validate_party_hash(@hash).should==true}.should_not raise_error
+  end
+
+  [:first_name,:last_name,:email].each do |field|
+    it "should require #{field.to_s}" do
+      @hash.delete(field)
+      lambda {Party.validate_party_hash(@hash)}.should raise_error(ArgumentError)
+    end
+  end
+
+end

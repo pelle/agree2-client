@@ -30,4 +30,48 @@ describe Agree2::User do
     @user.templates.should==@templates
   end
   
+  describe "http calls" do
+    before(:each) do
+      @token=@user.access_token
+      @json='{"hello":"world"}'
+      @response=mock("response")
+      @response.stub!(:code).and_return("200")
+      @response.stub!(:body).and_return(@json)
+    end
+    
+    [:get,:head,:delete].each do |m|
+      it "should perform http #{m.to_s}" do
+        @token.should_receive(m).with("/test").and_return(@response)
+        @user.send(m,"/test").should==@json
+      end
+    end
+
+    [:post,:put].each do |m|
+      it "should perform http #{m.to_s} with no data" do
+        @token.should_receive(m).with("/test",nil,{'Content-Type'=>'application/json'}).and_return(@response)
+        @user.send(m,"/test").should==@json
+      end
+
+      it "should perform http #{m.to_s} with hash" do
+        @token.should_receive(m).with("/test",'{"test":"this"}',{'Content-Type'=>'application/json'}).and_return(@response)
+        @user.send(m,"/test",{:test=>'this'}).should==@json
+      end
+    end
+    
+    describe "handle_response" do
+      it "should return body" do
+        @user.send(:handle_response,@response).should==@json
+      end
+
+      it "should return handle redirect" do
+        @response.stub!(:code).and_return("302")
+        @response.stub!(:[]).and_return('https://agree2.com/agreements/my_agreement')
+        @user.should_receive(:get).with('/agreements/my_agreement.json').and_return('{"permalink":"my_agreement","title":"hello there"}')
+        @agreement=@user.send(:handle_response,@response)
+        @agreement.permalink.should=='my_agreement'
+        @agreement.title.should=='hello there'
+      end
+      
+    end
+  end
 end

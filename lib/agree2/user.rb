@@ -23,12 +23,12 @@ module Agree2
       handle_response @access_token.head(path)
     end
     
-    def post(path,data)
-      handle_response @access_token.post(path,data.to_json,{'Content-Type'=>'application/json'})
+    def post(path,data=nil)
+      handle_response @access_token.post(path,(data ? data.to_json : nil),{'Content-Type'=>'application/json'})
     end
     
-    def put(path,data)
-      handle_response @access_token.put(path,data)
+    def put(path,data=nil)
+      handle_response @access_token.put(path,(data ? data.to_json : nil),{'Content-Type'=>'application/json'})
     end
     
     def delete(path)
@@ -47,19 +47,19 @@ module Agree2
       @access_token.secret
     end
     
-    def path
+    def path #:nodoc:
       ""
     end
     protected
     
-    def handle_response(response)
+    def handle_response(response)#:nodoc:
       case response.code
       when "200"
         response.body
       when "302"
         if response['Location']=~/(#{AGREE2_URL})\/(.*)$/
           parts=$2.split('/')
-          (parts[0].classify.constantize).get self,parts[1]
+          (('Agree2::'+parts[0].classify).constantize).get self,parts[1]
         else
           #todo raise hell
         end

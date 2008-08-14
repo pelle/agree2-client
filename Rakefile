@@ -12,9 +12,18 @@ namespace :rdoc do |ns|
   end
 end
 
-desc "Run all examples"
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_files = FileList['spec/*.rb']
+namespace :spec do |ns|
+  desc "Run all examples"
+  Spec::Rake::SpecTask.new('spec') do |t|
+    t.spec_files = FileList['spec/*.rb']
+  end
+
+  desc "Run rcov"
+  Spec::Rake::SpecTask.new('rcov') do |t|
+    t.spec_files = FileList['spec/*.rb']
+    t.rcov = true
+    t.rcov_opts = ['--exclude','gems,spec']
+  end
 end
 
 task :default=>[:spec]

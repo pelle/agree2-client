@@ -22,10 +22,6 @@ module Agree2
         "/#{collection_name}/#{id}"
       end
 
-      def singular_name #:nodoc:
-        self.to_s.demodulize.underscore
-      end
-
       def collection_name #:nodoc:
         self.to_s.demodulize.tableize
       end
@@ -33,7 +29,7 @@ module Agree2
       # Gets an instance of a resource
       def get(container,id)
         user=(container.is_a?(User) ? container : container.user)
-        new( container, user.get(instance_url(id)+".json"))
+        new( container, user.get(container.path+instance_url(id)+".json"))
       end
       
     end

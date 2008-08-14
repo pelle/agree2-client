@@ -1,6 +1,4 @@
 require File.join(File.dirname(__FILE__),"spec_helper")
-require 'open-uri'
-require 'hpricot'
 describe Agree2::Agreement do
   before(:each) do
     @client=Agree2::Client.new "client_key","client_secret"
@@ -24,6 +22,7 @@ describe Agree2::Agreement do
     it "should have body" do
       @agreement.body.should=="My Body"
     end
+    
   end
 
   describe "from xml" do
@@ -55,7 +54,7 @@ describe Agree2::Agreement do
     it "should have a url" do
       @agreement.to_url.should=="https://agree2.com/agreements/hello"
     end
-    
+        
     [:created_at,:updated_at,:fields,:state,:active_version,:version,
       :digest,:finalized_at,:finalized_at,:terminated_at,:activated_at,:valid_to].each do |field|
           it "should have #{field}" do

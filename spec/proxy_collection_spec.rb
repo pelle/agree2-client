@@ -56,6 +56,12 @@ describe Agree2::ProxyCollection do
       @user.should_not_receive(:get)
       @agreements.first      
     end
+    
+    it "should find an individual resource" do
+      @user.should_receive(:get).with('/agreements/something.json').and_return(
+                      IO.read(File.join(File.dirname(__FILE__),"fixtures","agreement.json")))
+      @agreements.find('something')
+    end
   end
   
   describe "nested load" do
@@ -82,5 +88,12 @@ describe Agree2::ProxyCollection do
     it "should have a user" do
       @parties.user.should==@user
     end
+    
+    it "should find an individual resource" do
+      @user.should_receive(:get).with('/agreements/hello/parties/123.json').and_return(
+                      IO.read(File.join(File.dirname(__FILE__),"fixtures","party.json")))
+      @parties.find(123)
+    end
+    
   end
 end
