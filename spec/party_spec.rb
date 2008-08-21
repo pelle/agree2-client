@@ -1,6 +1,10 @@
 require File.join(File.dirname(__FILE__),"spec_helper")
 require 'open-uri'
-require 'hpricot'
+#require 'hpricot'
+require 'oauth/request_proxy/rack_request'
+require 'rack/request'
+require 'rack/mock'
+
 include Agree2
 describe Party do
   before(:each) do
@@ -38,6 +42,18 @@ describe Party do
       @party.to_url.should=="https://agree2.com/agreements/hello/parties/1102"
     end
     
+    it "should generate present url" do
+      present_url=@party.present
+      present_url=~/^(http.*)\?(.*)$/
+      $1.should=="https://agree2.com/present/hello/to/bob@gmail.inv"
+    end
+    
+    it "should verify present url" do
+      present_url=@party.present
+      request = Rack::Request.new(Rack::MockRequest.env_for(present_url))
+      OAuth::Signature.verify(request,{:consumer=>@client.consumer,:token=>@user.access_token}).should==true
+      
+    end
   end
 
   describe "from json" do

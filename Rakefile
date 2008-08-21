@@ -8,7 +8,6 @@ namespace :rdoc do |ns|
   Rake::RDocTask.new(:doc) do |rd|
     rd.main = "README.rdoc"
     rd.rdoc_files.include("README.rdoc", "lib/**/*.rb")
-    rd.options << "--all"
   end
 end
 
