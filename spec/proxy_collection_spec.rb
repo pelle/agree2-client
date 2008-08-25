@@ -22,7 +22,7 @@ describe Agree2::ProxyCollection do
     end
 
     it "should call web service" do
-      @user.should_receive(:get).with("/agreements.json").and_return(@json)
+      @user.should_receive(:get).with("/agreements").and_return(@json)
       @agreements.length.should==1
     end
 
@@ -58,7 +58,7 @@ describe Agree2::ProxyCollection do
     end
     
     it "should find an individual resource" do
-      @user.should_receive(:get).with('/agreements/something.json').and_return(
+      @user.should_receive(:get).with('/agreements/something').and_return(
                       IO.read(File.join(File.dirname(__FILE__),"fixtures","agreement.json")))
       @agreements.find('something')
     end
@@ -94,7 +94,7 @@ describe Agree2::ProxyCollection do
     end
 
     it "should call web service" do
-      @user.should_receive(:get).with("/agreements/hello/parties.json").and_return(@json)
+      @user.should_receive(:get).with("/agreements/hello/parties").and_return(@json)
       @parties.length.should==1
     end
 
@@ -103,7 +103,7 @@ describe Agree2::ProxyCollection do
     end
     
     it "should find an individual resource" do
-      @user.should_receive(:get).with('/agreements/hello/parties/123.json').and_return(
+      @user.should_receive(:get).with('/agreements/hello/parties/123').and_return(
                       IO.read(File.join(File.dirname(__FILE__),"fixtures","party.json")))
       @parties.find(123)
     end

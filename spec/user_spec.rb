@@ -17,7 +17,7 @@ describe Agree2::User do
   it "should find all agreements" do
     @agreements=[]
     @json="[]"
-    @user.should_receive(:get).with("/agreements.json").and_return(@json)
+    @user.should_receive(:get).with("/agreements").and_return(@json)
     @user.agreements.length.should==0
     @user.agreements.should==@agreements
   end
@@ -25,7 +25,7 @@ describe Agree2::User do
   it "should find all templates" do
     @templates=[]
     @json="[]"
-    @user.should_receive(:get).with("/masters.json").and_return(@json)
+    @user.should_receive(:get).with("/masters").and_return(@json)
     @user.templates.length.should==0
     @user.templates.should==@templates
   end
@@ -66,7 +66,7 @@ describe Agree2::User do
       it "should return handle redirect" do
         @response.stub!(:code).and_return("302")
         @response.stub!(:[]).and_return('https://agree2.com/agreements/my_agreement')
-        @user.should_receive(:get).with('/agreements/my_agreement.json').and_return('{"permalink":"my_agreement","title":"hello there"}')
+        @user.should_receive(:get).with('/agreements/my_agreement').and_return('{"permalink":"my_agreement","title":"hello there"}')
         @agreement=@user.send(:handle_response,@response)
         @agreement.permalink.should=='my_agreement'
         @agreement.title.should=='hello there'

@@ -37,7 +37,7 @@ module Agree2
       # Gets an instance of a resource
       def get(container,id)
         user=(container.is_a?(User) ? container : container.user)
-        new( container, user.get(container.path+instance_path(id)+".json"))
+        new( container, user.get(container.path+instance_path(id)))
       end
       
     end

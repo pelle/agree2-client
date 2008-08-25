@@ -158,7 +158,7 @@ describe Agree2::Agreement do
 
   describe "load from server" do
     before(:each) do
-      @user.should_receive(:get).with("/agreements/hello.json").and_return(@json)
+      @user.should_receive(:get).with("/agreements/hello").and_return(@json)
     end
 
     def do_get

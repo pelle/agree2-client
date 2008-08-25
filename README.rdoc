@@ -4,15 +4,158 @@ Agree2 (https://agree2.com) is a site for creating and maintaining contracts.
 
 This Client library will let you integrate Agree2 into your own web applications to create full legal contracts between you and your users or between your users.
 
+== Install the Agree2 gem
+
+The Agree2 client is installed as a ruby gem:
+
+  sudo gem install agree2
+
+The source is available on github https://github.com/pelle/agree2-client/tree/master .
+
 == Getting Started
 
 First of all you need to signup with https://agree2.com. 
 
 Now go to the page http://agree2.dev/client_applications and register an application.
 
-Find the snippet of code on your client application page called "Example using your own AccessToken". This provides you everything to get started creating agreements under you own account.
+Find the snippet of code on your client application page called "Example using your own AccessToken". This provides you everything to get started creating agreements under you own account. It should something like this:
 
+  @client=Agree2::Client.new "DM0VybBbeTc6GfFSF1WbQ","aVmgGmQ1WOjsbbSZbrPcT4qet6IMa2tqJebaeyIBs"
+  @user=@client.user "zEHUnKDNuLGXQuicFWZRpQ","0VM3ESRl3rGtg95Wa2JsOFWmu4E78lNHfvMy1j4UtQ"
 
+If you wanted to list all the agreements you've got in your account you would do the following:
+
+  @user.agreements
+
+Creating a new agreement:
+
+  @agreement=@user.agreements.create(:title=>"User Agreement",:body=>"This is the body of the agreement")
+  @agreement.to_url # Returns the agreement's url
+  redirect_to @agreement.to_url # Redirect to agreements url in Rails
+  
+Invite a party:
+
+  @party=@agreement.parties.create :role=>"client",:first_name=>"Joe",:last_name=>"Bloggs",:email=>"joe@blogs.inv",:organization_name=>"Big Inc"
+  redirect_to @party.present # Redirect user in an authenticated way to agreement
+
+List the parties to an agreement:
+
+  @agreement.parties
+
+By default new agreements are in draft mode, ready for further customization. For the parties to be able to accept the agreement you must finalize it:
+ 
+  @agreement.finalize!
+  
+== Using Templates
+
+In most day to day use you will probably be using templates to create agreements. You can create your own templates or use our growing library of public templates (https://agree2.com/masters/public).
+
+As an example lets use this "Confidentiality Agreement for access to source code" (https://agree2.com/masters/b4f9a904efaab5ad71f695824c997c332b955876). 
+
+You could instantiate the template using the long code that comes at the end of the url:
+
+  @template=@agree2_user.templates.find "b4f9a904efaab5ad71f695824c997c332b955876"
+
+We have actually made it even easier though. Each template has it's own Ruby version that you can download. If you click on "Tools" and then "Instant Ruby API" you will find it customized for your own use. In our example you can find it at:
+
+https://agree2.com/masters/b4f9a904efaab5ad71f695824c997c332b955876.rb
+
+Save this file and require it into your application. This will also provide you with an instance of the template in @template.
+
+=== Preparing an Agreement from a Template
+
+To create an agreement with no customizations simply do:
+
+  @agreement=@template.prepare
+
+Templates have user defined fields that can be filled out by the application. This is where it gets interesting:
+
+  @agreement=@template.prepare :holder => "John Doe",
+         :holder_info => "john@gmail.inv",
+         :coder => "Phil Armonic",
+         :coder_info => "phil@gmail.inv",
+         :project => "Spoogle.com",
+         :svn => "http://svnhost.inv/spoogle"
+
+Each of the custom fields from the template is now directly available in the agreement:
+  
+  puts @agreement.holder
+  > "John Doe"
+  
+You can also get the full list of fields using:
+
+  @agreement.fields
+
+=== Preparing Agreement from a Template and adding Parties
+
+To reduce the amount of network activity between your servers and ours you can create an agreement from a template and add parties in one step.
+
+  @agreement=@template.prepare {
+     :holder => "John Doe",
+     :holder_info => "john@gmail.inv",
+     :coder => "Phil Armonic",
+     :coder_info => "phil@gmail.inv",
+     :project => "Spoogle.com",
+     :svn => "http://svnhost.inv/spoogle"
+    },{
+      :coder=>{ 
+        :first_name=>"Phil",
+        :last_name=>"Armonic",
+        :email=>"phil@gmail.inv"
+      },
+      :holder=>{ 
+        :first_name=>"John",
+        :last_name=>"Doe",
+        :email=>"john@gmail.inv",
+        :organization_name=>"Spoogle Inc"
+      }
+    }
+
+The above creates the agreement, adds the 2 parties and sends emails to them.
+
+You can also add your applications user in agree2 as a party without having to repeat all the information:
+
+@agreement=@template.prepare {
+   :holder => "John Doe",
+   :holder_info => "john@gmail.inv",
+   :coder => "Phil Armonic",
+   :coder_info => "phil@gmail.inv",
+   :project => "Spoogle.com",
+   :svn => "http://svnhost.inv/spoogle"
+  },{
+    :coder=>{ 
+      :first_name=>"Phil",
+      :last_name=>"Armonic",
+      :email=>"phil@gmail.inv"
+    }
+  },"holder"
+
+This does the same as the first example except "holder" will have the details from your user account.
+
+=== Preparing and signing an agreeement from the API
+
+Lets say you want to create an agreement, add the parties and sign it so your user can go straight to it to accept it. Agree2 offers the possibility of signing an agreement during the creation process. Not all accounts have access to this feature.
+
+The signing process is done using the OAuth protocol we use for authentication. We also only allow you to sign on behalf of the application's user.
+
+  @agreement=@template.prepare_and_sign {
+     :holder => "John Doe",
+     :holder_info => "john@gmail.inv",
+     :coder => "Phil Armonic",
+     :coder_info => "phil@gmail.inv",
+     :project => "Spoogle.com",
+     :svn => "http://svnhost.inv/spoogle"
+    },{
+      :coder=>{ 
+        :first_name=>"Phil",
+        :last_name=>"Armonic",
+        :email=>"phil@gmail.inv"
+      }
+    },"holder"
+
+The final parameter "holder" is optional. It will add you as a party with the role "application" by default.
+
+== About Agree2 Client
 
 Author::    Pelle Braendgaard (http://stakeventures.com)
 Copyright:: Copyright (c) 2008 Extra Eagle LLC
