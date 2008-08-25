@@ -7,6 +7,8 @@ describe Agree2::Template do
     @template=Agree2::Template.new(@user,{:permalink=>'hello'})
     @fields={:amount=>100}
     @bob={:first_name=>'Bob',:last_name=>'Green',:email=>'bob@green.inv'}
+    @json=IO.read(File.join(File.dirname(__FILE__),"fixtures","agreement.json"))
+    
   end
 
   it "should have a user" do
@@ -38,7 +40,7 @@ describe Agree2::Template do
     end
 
     it "should call raw_prepare with correct parameters" do
-      @user.should_receive(:post).with("/masters/hello/prepare",:fields=>@fields,:parties=>{:client=>@bob})
+      @user.should_receive(:post).with("/masters/hello/prepare",:fields=>@fields,:parties=>{:client=>@bob}).and_return(@json)
       @template.prepare(@fields,{:client=>@bob})
     end
 
@@ -68,7 +70,7 @@ describe Agree2::Template do
 
     it "should call raw_prepare with correct parameters" do
       @user.should_receive(:post).with("/masters/hello/prepare",:fields=>@fields,
-                :parties=>{:client=>@bob,'application'=>:application},:sign=>'application')
+                :parties=>{:client=>@bob,'application'=>:application},:sign=>'application').and_return(@json)
       @template.prepare_and_sign(@fields,{:client=>@bob})
     end
 

@@ -41,19 +41,19 @@ describe Agree2::User do
     
     [:get,:head,:delete].each do |m|
       it "should perform http #{m.to_s}" do
-        @token.should_receive(m).with("/test").and_return(@response)
+        @token.should_receive(m).with("/test",{'Content-Type'=>'application/json','Accept'=>'application/json'}).and_return(@response)
         @user.send(m,"/test").should==@json
       end
     end
 
     [:post,:put].each do |m|
       it "should perform http #{m.to_s} with no data" do
-        @token.should_receive(m).with("/test",nil,{'Content-Type'=>'application/json'}).and_return(@response)
+        @token.should_receive(m).with("/test",nil,{'Content-Type'=>'application/json','Accept'=>'application/json'}).and_return(@response)
         @user.send(m,"/test").should==@json
       end
 
       it "should perform http #{m.to_s} with hash" do
-        @token.should_receive(m).with("/test",'{"test":"this"}',{'Content-Type'=>'application/json'}).and_return(@response)
+        @token.should_receive(m).with("/test",'{"test":"this"}',{'Content-Type'=>'application/json','Accept'=>'application/json'}).and_return(@response)
         @user.send(m,"/test",{:test=>'this'}).should==@json
       end
     end

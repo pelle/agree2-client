@@ -94,7 +94,7 @@ module Agree2
     protected
 
     def raw_prepare(params={}) #:nodoc:
-      user.post("/masters/#{permalink}/prepare",params)
+      Agreement.new @user, user.post("/masters/#{permalink}/prepare",params)
     end
   end
 end

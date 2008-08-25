@@ -1,7 +1,7 @@
 require 'json'
 module Agree2
   class ProxyCollection
-    alias_method :proxy_respond_to?, :respond_to?
+    alias_method :proxy_respond_to?, :respond_to? #:nodoc:
     instance_methods.each { |m| undef_method m unless m =~ /(^__|^nil\?$|^send$|proxy_)/ }
     attr_accessor :user,:path,:singular
     def initialize(container,path,class_name=nil,values=nil)
@@ -18,44 +18,55 @@ module Agree2
       end
     end
     
+    # Builds an instance of the record
+    def build(attributes={})
+      @klass.new @container,attributes
+    end
+    
+    # Builds and saves and instance of the record
+    def create(attributes={})
+      build(attributes).save
+    end
+    
+    # Finds the instance given the id
     def find(id)
       @klass.get @container,id
     end
     
-    def respond_to?(symbol, include_priv = false)
+    def respond_to?(symbol, include_priv = false) #:nodoc:
       proxy_respond_to?(symbol, include_priv) || (load_target && @target.respond_to?(symbol, include_priv))
     end
     
     # Explicitly proxy === because the instance method removal above
     # doesn't catch it.
-    def ===(other)
+    def ===(other) #:nodoc:
       load_target
       other === @target
     end
     
     protected
     
-    def parse_json(json)
+    def parse_json(json) #:nodoc:
       instantiate_items(JSON.parse(json))
     end
     
-    def instantiate_items(list=[])
+    def instantiate_items(list=[]) #:nodoc:
       list.collect{|e|instantiate_item(e)}
     end
     
-    def instantiate_item(attributes={})
+    def instantiate_item(attributes={}) #:nodoc:
       @klass.new @container,attributes
     end
         
-    def load_target
-      @target||=parse_json(@user.get("#{self.path}.json"))
+    def load_target #:nodoc:
+      @target||=parse_json(@user.get("#{self.path}"))
     end
     
-    def reset
+    def reset #:nodoc:
       @target=nil
     end
     
-    def method_missing(method, *args, &block)
+    def method_missing(method, *args, &block) #:nodoc:
       if load_target
         @target.send(method, *args, &block)
       end

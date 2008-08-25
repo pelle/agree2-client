@@ -3,6 +3,8 @@ module Agree2
     attr_serializable :id,:role,:email,:first_name,:last_name,:created_at,:updated_at,:organization_name
     alias_method :agreement,:container  
     
+    # Creates a one time signed url to redirect your user to their acceptance page. This url is only valid once. Call again to
+    # redirect your user to the agreement again.
     def present
       path="/present/#{agreement.permalink}/to/#{email}"
       AGREE2_URL+user.client.consumer.create_signed_request(:get,path,user.access_token,{:scheme=>:query_string}).path

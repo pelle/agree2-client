@@ -1,7 +1,21 @@
 = Agree2 Client
- 
+
+Agree2 (https://agree2.com) is a site for creating and maintaining contracts. 
+
+This Client library will let you integrate Agree2 into your own web applications to create full legal contracts between you and your users or between your users.
+
+== Getting Started
+
+First of all you need to signup with https://agree2.com. 
+
+Now go to the page http://agree2.dev/client_applications and register an application.
+
+Find the snippet of code on your client application page called "Example using your own AccessToken". This provides you everything to get started creating agreements under you own account.
+
+
+
 Author::    Pelle Braendgaard (http://stakeventures.com)
-Copyright:: Copyright (c) 2008 Pelle Braendgaard
+Copyright:: Copyright (c) 2008 Extra Eagle LLC
 License::   MIT
 Git::       https://github.com/pelle/agree2-client/tree/master
 

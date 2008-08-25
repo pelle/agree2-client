@@ -62,6 +62,19 @@ describe Agree2::ProxyCollection do
                       IO.read(File.join(File.dirname(__FILE__),"fixtures","agreement.json")))
       @agreements.find('something')
     end
+    
+    it "should instantiate a new party" do
+      Agree2::Agreement.should_receive(:new).with(@user,{:title=>"Test",:body=>"Body"})
+      @agreements.build :title=>"Test",:body=>"Body"
+    end
+    
+    it "should create and save a new party" do
+      @agreement=mock("agreement")
+      Agree2::Agreement.should_receive(:new).with(@user,{:title=>"Test",:body=>"Body"}).and_return(@agreement)
+      @agreement.should_receive(:save)
+      @agreements.create :title=>"Test",:body=>"Body"
+    end
+    
   end
   
   describe "nested load" do
@@ -94,6 +107,18 @@ describe Agree2::ProxyCollection do
                       IO.read(File.join(File.dirname(__FILE__),"fixtures","party.json")))
       @parties.find(123)
     end
+
+    it "should instantiate a new party" do
+      Agree2::Party.should_receive(:new).with(@agreement,{:first_name=>"Bob",:last_name=>"Galbraith",:email=>'bob@bob.inv'})
+      @parties.build :first_name=>"Bob",:last_name=>"Galbraith",:email=>'bob@bob.inv'
+    end
+    
+    it "should create and save a new party" do
+      @party=mock("party")
+      Agree2::Party.should_receive(:new).with(@agreement,{:first_name=>"Bob",:last_name=>"Galbraith",:email=>'bob@bob.inv'}).and_return(@party)
+      @party.should_receive(:save)
+      @parties.create :first_name=>"Bob",:last_name=>"Galbraith",:email=>'bob@bob.inv'
+    end    
     
   end
 end

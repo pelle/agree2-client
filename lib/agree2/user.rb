@@ -1,7 +1,7 @@
+AGREE2_JSON_HEADERS={'Content-Type'=>'application/json','Accept'=>'application/json'}
 module Agree2
   class User
     attr_accessor :client,:access_token
-    
     def initialize(client,key,secret)
       @client=client
       @access_token=OAuth::AccessToken.new @client.consumer,key,secret
@@ -16,23 +16,23 @@ module Agree2
     end
     
     def get(path)
-      handle_response @access_token.get(path)
+      handle_response @access_token.get(path,AGREE2_JSON_HEADERS)
     end
 
     def head(path)
-      handle_response @access_token.head(path)
+      handle_response @access_token.head(path,AGREE2_JSON_HEADERS)
     end
     
     def post(path,data=nil)
-      handle_response @access_token.post(path,(data ? data.to_json : nil),{'Content-Type'=>'application/json'})
+      handle_response @access_token.post(path,(data ? data.to_json : nil),AGREE2_JSON_HEADERS)
     end
     
     def put(path,data=nil)
-      handle_response @access_token.put(path,(data ? data.to_json : nil),{'Content-Type'=>'application/json'})
+      handle_response @access_token.put(path,(data ? data.to_json : nil),AGREE2_JSON_HEADERS )
     end
     
     def delete(path)
-      handle_response @access_token.delete(path)
+      handle_response @access_token.delete(path,AGREE2_JSON_HEADERS)
     end
 
     # OAuth Stuff below here
@@ -55,6 +55,8 @@ module Agree2
     def handle_response(response)#:nodoc:
       case response.code
       when "200"
+        response.body
+      when "201"
         response.body
       when "302"
         if response['Location']=~/(#{AGREE2_URL})\/(.*)$/
