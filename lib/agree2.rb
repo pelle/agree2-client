@@ -1,6 +1,7 @@
 require 'net/https'
 require 'rubygems'
 gem 'oauth', ">= 0.2.4"
+require 'oauth'
 gem 'json'
 gem 'activesupport'
 require 'activesupport'
